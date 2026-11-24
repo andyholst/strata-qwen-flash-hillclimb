@@ -1,0 +1,15 @@
+{
+  "name": "nvchunk1-128k",
+  "base_url": "http://127.0.0.1:8080",
+  "model": "qwen3.8-flash-next-iq3_xxs",
+  "api_key_env": "STRATA_API_KEY",
+  "concurrency": 1,
+  "prefill_lengths": [],
+  "temperature": 0.6,
+  "require_ac": true,
+  "memory": {
+    "cap_gib": 58,
+    "probe": ["bash", "scripts/mem_engine.sh"],
+    "interval_s": 5
+  }
+}

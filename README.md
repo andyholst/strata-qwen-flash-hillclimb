@@ -109,3 +109,15 @@ One harness run, six decode repeats, temperature 0.6, thinking tokens counted wh
 | Engine RSS | 46.02 GiB peak | 58 GiB watchdog, 62 GiB machine | |
 
 45% of the no-speculation decode ceiling, with DFlash2 already on. Prefill on the 21K document is in the neighborhood of the formula. Details, including why the token counts undershoot the targets, are in `PLAN.md`. The raw row is `ledger.jsonl`.
+
+## 121530-token result
+
+One change from the original preset: `STRATA_NV_CHUNK=16`, which moves this card's prompt chunk from 8192 to 16384. Same 121530-token document, needle 3/3 every time.
+
+| Run | Prefill | TTFT | Decode |
+|---|---:|---:|---:|
+| Control, chunk 8192 | 2123 and 2116 tok/s | 57.2 s and 57.4 s | 83 and 85 tok/s |
+| Kept, `STRATA_NV_CHUNK=16` | 2801 tok/s | 43.4 s | 83 tok/s |
+| Rejected, `STRATA_NV_CHUNK=1` (chunk 22784) | 2847 tok/s | 42.7 s | 79 tok/s |
+
+That is 1.32× on the long prefill, not 2×. A larger chunk did not go any further. The live preset is `STRATA_NV_CHUNK=16`.

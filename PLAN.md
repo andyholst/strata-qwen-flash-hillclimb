@@ -77,10 +77,30 @@ drafting, so the gap is not "speculation is off". Prefill at 21573 tokens,
 loose: the formula's active-parameter count is estimated, and the prompt is shorter
 than 32K.
 
+## 121530-token prefill, one change
+
+Same document shape as the harness (`--long 185000`), which this tokenizer counts as 121530 tokens. Retrieval is three exact codes. One decode sample at that length, plus one short c1 sample. Controls are fresh process starts.
+
+Hypothesis: on this 16 GiB card `--prefill auto` stays at 8192 so prompt loans do not eat expert slots. `STRATA_NV_CHUNK=16` raises that chunk to 16384. A 121k prefill was the thing to speed up. Decode was not expected to move.
+
+| Run | Chunk the engine reported | Prefill tok/s | TTFT | Decode at 121530 | Retrieval | Short c1 |
+|---|---:|---:|---:|---:|---|---:|
+| ctl-128k-a (unset, the original preset) | 8192 | 2123.0 | 57.2 s | 82.99 | 3/3 | 79.07 |
+| nvchunk16-128k (`STRATA_NV_CHUNK=16`) | 16384 | 2801.2 | 43.4 s | 83.35 | 3/3 | 72.40 |
+| ctl-128k-b (`STRATA_NV_CHUNK=0`) | 8192 | 2116.2 | 57.4 s | 84.74 | 3/3 | 76.05 |
+| nvchunk1-128k (`STRATA_NV_CHUNK=1`) | 22784 | 2847.1 | 42.7 s | 79.32 | 3/3 | 90.40 |
+
+`STRATA_NV_CHUNK=16` is kept. Prefill is 2801 against controls of 2123 and 2116, about 1.32×, and the needle still matches. Decode at 121530 tokens stays in the same band.
+
+`STRATA_NV_CHUNK=1` raises the chunk again, to 22784, and lands at 2847 tok/s. That is inside the noise of 2801. It is not kept. The server is back on `STRATA_NV_CHUNK=16`.
+
+This is not a doubling. The two controls agree, and a still larger chunk did not add another step, so the 8192 path was the slow one and 16384 already left it. Short-context decode was not the target of this lever. Its no-speculation ceiling at 128K is 117 tok/s, and the measured long decode is about 83 tok/s with DFlash2 already on.
+
+The preset `IQ3_XXS 128K (9)` now stores `STRATA_NV_CHUNK=16`. Before this session that variable was unset and the engine held 8192.
+
 ## Not done yet
 
-- No flag has been flipped.
-- No interleaved control, candidate, control.
-- A document that the tokenizer actually counts as 32768 and as 131072.
+- A document the tokenizer counts as the full 131072.
+- Decode is still about 83 tok/s at 121530 tokens. Doubling that would pass the 117 tok/s no-speculation ceiling, so it needs a cheaper step, not a bigger prefill chunk.
 - VRAM bandwidth during a real decode graph. The 563 GB/s figure is a read kernel, not the model's GEMV.
 - CPU governor was not switched off `powersave`.
