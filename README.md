@@ -120,4 +120,6 @@ One change from the original preset: `STRATA_NV_CHUNK=16`, which moves this card
 | Kept, `STRATA_NV_CHUNK=16` | 2801 tok/s | 43.4 s | 83 tok/s |
 | Rejected, `STRATA_NV_CHUNK=1` (chunk 22784) | 2847 tok/s | 42.7 s | 79 tok/s |
 
-That is 1.32× on the long prefill, not 2×. A larger chunk did not go any further. The live preset is `STRATA_NV_CHUNK=16`.
+That is 1.32× on the long prefill, not 2×. A larger chunk did not go any further.
+
+The running server is a copy of the Hermes preset, not a change to `IQ3_XXS 128K Hermes` itself. The copy is `IQ3_XXS 128K Hermes NV16` (`launch-iq3_xxs-128k-hermes-nv16`). It keeps the Hermes engine arguments and adds `STRATA_NV_CHUNK=16`. The parent preset's extra settings are still empty. The public copy of that preset is `configs/preset-hermes-nv16.json`. It has no API key.

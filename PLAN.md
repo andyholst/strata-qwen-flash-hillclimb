@@ -96,7 +96,7 @@ Hypothesis: on this 16 GiB card `--prefill auto` stays at 8192 so prompt loans d
 
 This is not a doubling. The two controls agree, and a still larger chunk did not add another step, so the 8192 path was the slow one and 16384 already left it. Short-context decode was not the target of this lever. Its no-speculation ceiling at 128K is 117 tok/s, and the measured long decode is about 83 tok/s with DFlash2 already on.
 
-The preset `IQ3_XXS 128K (9)` now stores `STRATA_NV_CHUNK=16`. Before this session that variable was unset and the engine held 8192.
+`STRATA_NV_CHUNK=16` is not left on `IQ3_XXS 128K (9)`. That run config's env is empty again. The kept server is a new launch preset, `IQ3_XXS 128K Hermes NV16`, copied from `IQ3_XXS 128K Hermes` with that one variable added. The Hermes preset file was not edited. See `configs/preset-hermes-nv16.json`.
 
 ## Not done yet
 
